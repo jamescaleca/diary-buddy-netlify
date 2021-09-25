@@ -20,6 +20,7 @@ function ScratchPad(props) {
 
     function handleSubmit(e) {
         e.preventDefault()
+        console.log(inputs)
         postEntry(inputs)
         setInputs(initInputs)
         submitBtnRedirect()
