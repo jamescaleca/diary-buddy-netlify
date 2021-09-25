@@ -11,10 +11,10 @@ function EntriesContextProvider(props) {
     const [search, setSearch] = useState('')
     const [searchData, setSearchData] = useState([])
 
-    const encode = (data) => {
-        console.log(Object.keys(data))
-        return Object.keys(data)
-            .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+    const encode = (res) => {
+        console.log(Object(res.data))
+        return Object.keys(res.data)
+            .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(res.data[key]))
             .join("&");
     }
 
