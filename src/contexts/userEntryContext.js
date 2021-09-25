@@ -1,7 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from "react"
 import {useHistory} from "react-router-dom"
-// import axios from "axios"
-import fetch from 'node-fetch'
+import axios from "axios"
 import Entry from "../components/Entry"
 import "../styles.css"
 
@@ -19,103 +18,103 @@ function EntriesContextProvider(props) {
             .join("&");
     }
 
-    function getEntries() {
-        fetch('user-entries')
-            .then(res => setEntries(res.data))
-            .catch(err => console.log(err))
-    }
-
     // function getEntries() {
-    //     axios.get("/user-entries")
-    //     .then(res => setEntries(res.data))
-    //     .catch(err => console.log(err.response.data.errMsg))
+    //     fetch('user-entries')
+    //         .then(res => setEntries(res.data))
+    //         .catch(err => console.log(err))
     // }
 
+    function getEntries() {
+        axios.get("/user-entries")
+        .then(res => setEntries(res.data))
+        .catch(err => console.log(err.response.data.errMsg))
+    }
+
     function getEntryById(entryId) {
-        fetch(`user-entries/${entryId}`)
-            .then(res => setEntries(res.data))
-            .catch(err => console.log(err))
-        // axios.get(`/user-entries/${entryId}`)
+        // fetch(`user-entries/${entryId}`)
         //     .then(res => setEntries(res.data))
-        //     .catch(err => console.log(err.response.data.errMsg))
+        //     .catch(err => console.log(err))
+        axios.get(`/user-entries/${entryId}`)
+            .then(res => setEntries(res.data))
+            .catch(err => console.log(err.response.data.errMsg))
     }
 
     useEffect(() => {
         getEntries()
     }, [])
 
-    function postEntry(newEntry) {
-        fetch('/user-entries', {
-            method: 'POST',
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: encode({'form-name': 'scratch-pad-form', ...newEntry})
-        })
-            .then(res => {
-                setEntries(prevEntries => [...prevEntries, res.data])
-            })
-            .then(() => alert('Success!'))
-            .catch(err => alert(err))
-    }
-
     // function postEntry(newEntry) {
-    //     const axiosConfig = {
-    //         header: { "Content-Type": "application/x-www-form-urlencoded" }
-    //     }
-    //     axios.post("/user-entries", 
-    //         encode({
-    //             'form-name': 'scratch-pad-form', ...newEntry
-    //         }),
-    //         axiosConfig
-    //     )
+    //     fetch('/user-entries', {
+    //         method: 'POST',
+    //         headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    //         body: encode({'form-name': 'scratch-pad-form', ...newEntry})
+    //     })
     //         .then(res => {
     //             setEntries(prevEntries => [...prevEntries, res.data])
     //         })
-    //         .catch(err => console.log(err))
+    //         .then(() => alert('Success!'))
+    //         .catch(err => alert(err))
     // }
 
-    function deleteEntry(entryId) {
-        const requestOptions = {
-            method: 'DELETE',
-            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    function postEntry(newEntry) {
+        const axiosConfig = {
+            header: { "Content-Type": "application/x-www-form-urlencoded" }
         }
-        fetch(`/user-entries/${entryId}`, requestOptions)
+        axios.post("/user-entries", 
+            encode({
+                'form-name': 'scratch-pad-form', ...newEntry
+            }),
+            axiosConfig
+        )
             .then(res => {
-                setEntries(prevEntries => prevEntries.filter(entry => entry.id !== entryId))
-                //get request goes here
-                fetch('/user-entries')
-                    .then(res => setEntries(res.data))
-                    .catch(err => console.log(err.response.data.errMsg))
+                setEntries(prevEntries => [...prevEntries, res.data])
             })
             .catch(err => console.log(err))
-            .then(() => alert('Delete successful'))
     }
 
     // function deleteEntry(entryId) {
-    //     axios.delete(`/user-entries/${entryId}`)
+    //     const requestOptions = {
+    //         method: 'DELETE',
+    //         headers: { "Content-Type": "application/x-www-form-urlencoded" }
+    //     }
+    //     fetch(`/user-entries/${entryId}`, requestOptions)
     //         .then(res => {
     //             setEntries(prevEntries => prevEntries.filter(entry => entry.id !== entryId))
-    //             axios.get('/entries')
+    //             //get request goes here
+    //             fetch('/user-entries')
     //                 .then(res => setEntries(res.data))
+    //                 .catch(err => console.log(err.response.data.errMsg))
     //         })
     //         .catch(err => console.log(err))
+    //         .then(() => alert('Delete successful'))
     // }
 
-    function editEntry(updates, entryId) {
-        const requestOptions = {
-            method: 'PUT',
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: updates
-        }
-        fetch(`user-entries/${entryId}`, requestOptions)
+    function deleteEntry(entryId) {
+        axios.delete(`/user-entries/${entryId}`)
             .then(res => {
-                setEntries(prevEntries => prevEntries.map(entry => entry._id !== entryId ? entry : res.data))
+                setEntries(prevEntries => prevEntries.filter(entry => entry.id !== entryId))
+                axios.get('/entries')
+                    .then(res => setEntries(res.data))
             })
             .catch(err => console.log(err))
-        // axios.put(`/user-entries/${entryId}`, updates)
+    }
+
+    function editEntry(updates, entryId) {
+        // const requestOptions = {
+        //     method: 'PUT',
+        //     headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        //     body: updates
+        // }
+        // fetch(`user-entries/${entryId}`, requestOptions)
         //     .then(res => {
         //         setEntries(prevEntries => prevEntries.map(entry => entry._id !== entryId ? entry : res.data))
         //     })
         //     .catch(err => console.log(err))
+        axios.put(`/user-entries/${entryId}`, updates)
+            .then(res => {
+                setEntries(prevEntries => prevEntries.map(entry => entry._id !== entryId ? entry : res.data))
+            })
+            .catch(err => console.log(err))
     }
 
     const allEntries = entries.map(entry => 
@@ -131,17 +130,17 @@ function EntriesContextProvider(props) {
 
     // For Entry Search
     const filterEntries = (e) => {
-        fetch(`/user-entries/search?entry=${search}`)
-            .then(res => {
-                const searchData = res.data
-                setSearchData(searchData)
-            })
-        // axios
-        //     .get(`/entries/search?entry=${search}`)
+        // fetch(`/user-entries/search?entry=${search}`)
         //     .then(res => {
         //         const searchData = res.data
         //         setSearchData(searchData)
         //     })
+        axios
+            .get(`/entries/search?entry=${search}`)
+            .then(res => {
+                const searchData = res.data
+                setSearchData(searchData)
+            })
     }
 
     const searchResults = searchData.length > 0 ? 
